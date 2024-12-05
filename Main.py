@@ -67,5 +67,57 @@ zero_duration_trips = rental[rental['trip_duration'] == 0]
 print(zero_duration_trips)
 # %%
 # %%
+# %%
+# working on the data set weather 
+print(weather.info())
+print(weather.isnull().sum())
+# %%
+# delete unnecessary columns 
+col_keep= ['name', 'datetime', 'temp', 'humidity', 'precip', 
+                   'windgust', 'windspeed', 'visibility', 'conditions', 
+                   'description', 'icon']
+# %%
+# keep neccery columns and create new dataset weather_data
+weather_data=weather[col_keep]
+#%%
+# summery of dataset
+print(weather_data.info()
+      )
+print(weather_data.head())
+#%%
+# check null values and dtypes 
+print(weather_data.isnull().sum()
+      )
+print(weather_data.isna().sum())
+print(weather_data.dtypes)
+# %%
+#working on the frequency dataset 
+# check null values 
+print(freq.isnull().sum())
+print(freq.isna().sum())
+# %%
+# check col names for merging these dataset
+
+print("col name of the weather dataset")
+print(weather_data.columns)
+#%%
+print("col name of the freq data set ")
+print(freq.columns)
+# %%
+# merge these 2 dataset as file 
+# we take datetime col as common for merging  
+weather_data['datetime']=pd.to_datetime(weather_data['datetime'], errors='coerce')
+freq['datetime']=pd.to_datetime(freq['datetime'], errors='coerce')
+file=pd.merge(weather_data,freq,on='datetime',how='inner')
+#%%
+# check summery statstics 
+print(file.head())
+# %%
+# check null values 
+print(file.isna().sum())
+#%%
+print(file.info())
+# %%
+print(file.duplicated().sum())
 
 # %%
