@@ -1,0 +1,54 @@
+deleting variables
+1) Crossing Users Injured For Reporting Railroad
+2)Crossing Users Killed For Reporting Railroad
+3)incident number 
+5)incident year
+6)incident month 
+7) Maintainance Incident Number
+8)Maintenance Incident Year
+9)Maintenance Incident Month
+10) Grade Crossing ID
+11)Hour
+11B) Day 
+11C) Minute   
+11D) AM/PM
+12)Highway User Code
+13)Vehicle Direction Code
+14) Highway User Position Code
+15) Equipment Involved Code
+16) Railroad Car Unit Position
+17) Equipment Struck Code
+18) Hazmat Involvement Code
+19) Hazmat Involvement
+20)Visibility Code
+21)Weather Condition Code
+22)Equipment Type Code
+23)Track Type Code
+24)Track Class
+25)Estimated/Recorded Speed
+26)Train Direction Code
+27)Crossing Warning Expanded Code 12
+28) Crossing Warning Expanded 12
+29)Crossing Warning Location Code
+30)Crossing Illuminated
+31)Highway User Action Code
+32)View Obstruction Code
+33)Driver Condition Code
+34)Crossing Users Killed For Reporting Railroad	
+35)Crossing Users Injured For Reporting Railroad
+36)Employees Killed For Reporting Railroad
+37)Employees Injured For Reporting Railroad	
+38)Form 54 Filed	
+39)Passengers Killed For Reporting Railroad	
+40)Passengers Injured For Reporting Railroad	
+41)Total Killed Form 57	
+42)Total Injured Form 57	
+43)Railroad Type	
+44)Joint Code	
+45)Total Killed Form 55A	
+46)Total Injured Form 55A	
+47)District	
+48)Report Key
+
+
+ 
