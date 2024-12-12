@@ -111,6 +111,26 @@ y_pred = model_reduced.predict(X_test)
 report = classification_report(y_test, y_pred)
 print("Classification Report:\n", report)
 
+#%%
+# Feature Importance After Feature Selection
+feature_importances = model_reduced.feature_importances_
+
+# Create a DataFrame to display the feature names and their importance scores
+feature_df = pd.DataFrame({
+    'Feature': X_reduced.columns,
+    'Importance': feature_importances
+})
+
+# Sort the features by importance
+feature_df = feature_df.sort_values(by='Importance', ascending=False)
+
+# Plot the feature importance
+plt.figure(figsize=(10, 6))
+plt.barh(importance_df['Feature'], importance_df['Importance'])
+plt.xlabel('Importance')
+plt.title('Feature Importance in Random Forest')
+plt.gca().invert_yaxis()  # Invert y-axis to display most important features at the top
+plt.show()
 # %%
 from sklearn.metrics import roc_curve, auc
 from sklearn.preprocessing import label_binarize
@@ -150,13 +170,26 @@ plt.ylabel('True Positive Rate')
 plt.title('Receiver Operating Characteristic (ROC) Curve for Multiclass')
 plt.legend(loc="lower right")
 plt.show()
+
+#%%
+# Compute the confusion matrix
+cm1 = confusion_matrix(y_test, y_pred)
+
+# Create a heatmap to visualize the confusion matrix
+plt.figure(figsize=(6, 5))
+sns.heatmap(cm1, annot=True, fmt='d', cmap='viridis', xticklabels=['Killed', 'Injured', 'Uninjured'], yticklabels=['Killed', 'Injured', 'Uninjured'], cbar=False)
+
+# Add labels and title
+plt.title('Confusion Matrix for Random Forest', fontsize=14)
+plt.xlabel('Predicted Labels', fontsize=12)
+plt.ylabel('True Labels', fontsize=12)
 # %%
-from sklearn.svm import SVC
-# MODEL 2: SVM 
+
+# MODEL 2: DECISION TREE
 # Initialize the SVM classifier with probability estimates
-X = accs1.drop('Driver Condition', axis=1)  # Features: exclude the target column
-y = accs1['Driver Condition'] 
-X_train1, X_test1, y_train1, y_test1 = train_test_split(X, y, test_size=0.2, random_state=42)
+#X = accs1.drop('Driver Condition', axis=1)  # Features: exclude the target column
+#y = accs1['Driver Condition'] 
+X_train1, X_test1, y_train1, y_test1 = train_test_split(X_reduced, y, test_size=0.2, random_state=42)
 
 
 
@@ -176,13 +209,7 @@ print(f"Accuracy: {accuracy:.4f}")
 
 # Detailed classification report
 print(classification_report(y_test1, y_pred1))
-# %%
-from sklearn.tree import DecisionTreeClassifier, plot_tree
-# Plot the Decision Tree
-import matplotlib.pyplot as plt
-plt.figure(figsize=(12,8))
-plot_tree(model_tree, filled=True, feature_names=accs1.feature_names, class_names=accs1.target_names)
-plt.show()
+
 # %%
 from sklearn.model_selection import GridSearchCV
 
@@ -210,5 +237,69 @@ print("Best hyperparameters found: ", grid_search.best_params_)
 best_model = grid_search.best_estimator_
 y_pred_best = best_model.predict(X_test1)
 print("Best Model Accuracy:", accuracy_score(y_test1, y_pred_best))
+
+# %%
+report_tree = classification_report(y_test1, y_pred_best)
+print("Classification Report:\n", report_tree)
+# %%
+
+# %%
+from sklearn.tree import plot_tree
+import matplotlib.pyplot as plt
+
+# Plot the decision tree
+plt.figure(figsize=(20, 10))
+plot_tree(best_model, filled=True, feature_names=X_reduced.columns, class_names=[str(cls) for cls in y.unique()], rounded=True, fontsize=10)
+plt.title("Decision Tree Visualization")
+plt.show()
+
+# %%
+# Decision Tree ROC Curve
+from sklearn.metrics import roc_curve, auc
+import matplotlib.pyplot as plt
+
+# Binarize labels for multiclass
+y_bin = label_binarize(y_test1, classes=[0, 1, 2])  # Adjust for your classes
+y_score = best_model.predict_proba(X_test1)
+
+# Plot ROC curve for each class
+for i in range(y_bin.shape[1]):
+    fpr, tpr, _ = roc_curve(y_bin[:, i], y_score[:, i])
+    roc_auc = auc(fpr, tpr)
+    plt.plot(fpr, tpr, label=f'Class {i} (AUC = {roc_auc:.2f})')
+
+plt.plot([0, 1], [0, 1], 'k--')  # Random classifier
+plt.xlabel('False Positive Rate')
+plt.ylabel('True Positive Rate')
+plt.title('Multiclass ROC Curve')
+plt.legend(loc='lower right')
+plt.show()
+
+# %%
+from sklearn.model_selection import learning_curve
+train_sizes, train_scores, val_scores = learning_curve(
+    best_model, X_reduced, y, cv=5, n_jobs=-1
+)
+
+plt.plot(train_sizes, train_scores.mean(axis=1), label='Training score')
+plt.plot(train_sizes, val_scores.mean(axis=1), label='Cross-validation score')
+plt.xlabel('Training Size')
+plt.ylabel('Accuracy')
+plt.legend()
+plt.show()
+
+# %%
+# Compute the confusion matrix
+cm = confusion_matrix(y_test1, y_pred_best)
+
+# Create a heatmap to visualize the confusion matrix
+plt.figure(figsize=(6, 5))
+sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', xticklabels=['Killed', 'Injured', 'Uninjured'], yticklabels=['Killed', 'Injured', 'Uninjured'], cbar=False)
+
+# Add labels and title
+plt.title('Confusion Matrix for Decision Tree (Multiclass)', fontsize=14)
+plt.xlabel('Predicted Labels', fontsize=12)
+plt.ylabel('True Labels', fontsize=12)
+# %%
 
 # %%
