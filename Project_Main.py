@@ -6,6 +6,11 @@ import seaborn as sns
 # %%
 # Load the data
 accs = pd.read_csv("accidents_final_data.csv")
+
+#%%
+df = pd.read_csv("accidents_final_data.csv")
+
+
 # %%
 accs.head()
 
@@ -24,8 +29,37 @@ for col in categorical_columns:
     label_encoders[col] = le
 
 #%%
-# SMART Q: Predicting the Driver Injury
+# SMART Q1: Predicting the Driver Injury
 
+#%%
+#EDA
+# Categorical features vs Injury Severity
+sns.countplot(x='Highway User', hue='Driver Condition', data=df)
+plt.title('User vs Injury Severity')
+plt.xticks(rotation=45, ha='right')
+plt.show()
+
+#%%
+killed_df = df[df['Driver Condition'] == 'Killed']
+
+# Now, aggregate by 'state' to count the number of 'killed' drivers
+state_killed_counts = killed_df['State Name'].value_counts().reset_index()
+state_killed_counts.columns = ['State Name', 'Killed_count']
+
+# Sort the values to see the states with the most fatalities
+state_killed_counts = state_killed_counts.sort_values(by='Killed_count', ascending=False)
+
+# Plot the data
+plt.figure(figsize=(14, 8))
+sns.barplot(x='Killed_count', y='State Name', data=state_killed_counts, palette='viridis')
+
+#%%
+state_killed_counts.plot(kind='pie', autopct='%1.1f%%', figsize=(10, 8), cmap='viridis', legend=False)
+
+# Add title
+plt.title('Proportion of Killed Drivers by State', fontsize=16)
+plt.ylabel('')  # Remove the ylabel
+plt.show()
 # %%
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
