@@ -100,6 +100,7 @@ accs2[target_var] = label_encoder.fit_transform(accs2[target_var])
 accs2 = accs2.dropna()
 
 #%%
+from imblearn.over_sampling import SMOTE
 # Split features and target
 X = accs2[independent_vars]
 y = accs2[target_var]
@@ -129,6 +130,13 @@ print(confusion_matrix(y_test, y_pred))
 print("\nClassification Report:")
 print(classification_report(y_test, y_pred))
 
+#%%
+from sklearn.metrics import classification_report, precision_recall_fscore_support
+
+precision_avg, recall_avg, f1_avg, _ = precision_recall_fscore_support(y_test, y_pred, average='weighted')
+print("Weighted Precision:", precision_avg)
+print("Weighted Recall:", recall_avg)
+print("Weighted F1-Score:", f1_avg)
 #%%
 from sklearn.metrics import roc_curve, auc, roc_auc_score
 from sklearn.preprocessing import label_binarize
@@ -177,3 +185,4 @@ plt.show()
 
 #%%
 
+# %%
