@@ -8,36 +8,24 @@ import seaborn as sns
 accs = pd.read_csv("accidents_final_data.csv")
 # %%
 accs.head()
-#%%
-# SMART Q: Predicting the Driver Injury
-selected_columns = ['Report Year','Month','County Name','State Name','City Name','Highway Name','Highway User','Vehicle Direction','Highway User Position','Temperature','Visibility','Weather Condition','Train Direction','Highway User Action','Driver Condition']
-
-# Subset the DataFrame to only include those columns
-
-accs1 = accs[selected_columns]
 
 #%%
-#accs1['Time'] = accs1['Time'].replace(r'(^0:)', '12:', regex=True)
-#%%
-accs1['Time'] = pd.to_datetime(accs1['Time'], format='%I:%M %p')
-accs1['Hour'] = accs1['Time'].dt.hour
-accs1['Minute'] = accs1['Time'].dt.minute
-#accs['AM_PM'] = (accs['Time'].dt.hour < 12).astype(int)
+accs1 = accs
 #%%
 from sklearn.preprocessing import LabelEncoder
 encoder = LabelEncoder()
-accs1['County Name'] = encoder.fit_transform(accs1['County Name'])
-accs1['State Name'] = encoder.fit_transform(accs1['State Name'])
-accs1['City Name'] = encoder.fit_transform(accs1['City Name'])
-accs1['Highway Name'] = encoder.fit_transform(accs1['Highway Name'])
-accs1['Vehicle Direction'] = encoder.fit_transform(accs1['Vehicle Direction'])
-accs1['Highway User Position'] = encoder.fit_transform(accs1['Highway User Position'])
-accs1['Visibility'] = encoder.fit_transform(accs1['Visibility'])
-accs1['Weather Condition'] = encoder.fit_transform(accs1['Weather Condition'])
-accs1['Train Direction'] = encoder.fit_transform(accs1['Train Direction'])
-accs1['Highway User Action'] = encoder.fit_transform(accs1['Highway User Action'])
-accs1['Driver Condition'] = encoder.fit_transform(accs1['Driver Condition'])
-accs1['Highway User'] = encoder.fit_transform(accs1['Highway User'])
+categorical_columns = accs1.select_dtypes(include=['object']).columns
+
+# Encode all categorical variables
+label_encoders = {}
+for col in categorical_columns:
+    le = LabelEncoder()
+    accs1[col] = le.fit_transform(accs1[col])
+    label_encoders[col] = le
+
+#%%
+# SMART Q: Predicting the Driver Injury
+
 # %%
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
@@ -49,6 +37,7 @@ X = accs1.drop('Driver Condition', axis=1)  # Features: exclude the target colum
 y = accs1['Driver Condition'] 
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
 # %%
+#MODEL 1: Random Forest Classifier
 # Initialize the RandomForestClassifier
 rf_model = RandomForestClassifier(n_estimators=100, random_state=42)
 
@@ -99,8 +88,66 @@ plt.gca().invert_yaxis()  # Invert y-axis to display most important features at 
 plt.show()
 
 # %%
-accs1.head()
+threshold = 0.01
+low_importance_features = importance_df[importance_df['Importance'] < threshold]['Feature']
+
+# Drop the low-importance features from the dataframe
+X_reduced = X.drop(columns=low_importance_features)
+
+print("Dropped features with low importance:", low_importance_features)
 # %%
-#accs1['Highway User'] = encoder.fit_transform(accs1['Highway User'])
-accs1.dtypes
+# Re-train the model with reduced features
+X_train, X_test, y_train1, y_test = train_test_split(X_reduced, y, test_size=0.2, random_state=42)
+model_reduced = RandomForestClassifier(random_state=42)
+model_reduced.fit(X_train, y_train1)
+
+# Evaluate the model on the test set
+accuracy = model_reduced.score(X_test, y_test)
+print(f"Model accuracy after removing low-importance features: {accuracy:.4f}")
+
+# %%
+y_pred = model_reduced.predict(X_test)
+#accuracy = accuracy_score(X_test, y_test)
+report = classification_report(y_test, y_pred)
+print("Classification Report:\n", report)
+
+# %%
+from sklearn.metrics import roc_curve, auc
+from sklearn.preprocessing import label_binarize
+from sklearn.multiclass import OneVsRestClassifier
+
+# Binarize the output labels for multiclass
+y_train_bin = label_binarize(y_train1, classes=[0, 1, 2])  # Adjust classes as per your dataset
+y_test_bin = label_binarize(y_test, classes=[0, 1, 2])
+
+# Initialize the RandomForestClassifier with OneVsRestClassifier
+model_reduced1 = OneVsRestClassifier(RandomForestClassifier(random_state=42))
+
+# Fit the model on the training data
+model_reduced1.fit(X_train, y_train_bin)
+
+# Predict the probabilities for the test set
+y_prob = model_reduced1.predict_proba(X_test)
+
+# Compute ROC curve and ROC area for each class
+fpr = dict()
+tpr = dict()
+roc_auc = dict()
+for i in range(y_prob.shape[1]):
+    fpr[i], tpr[i], _ = roc_curve(y_test_bin[:, i], y_prob[:, i])
+    roc_auc[i] = auc(fpr[i], tpr[i])
+
+# Plot ROC curve for each class
+plt.figure()
+colors = ['aqua', 'darkorange', 'cornflowerblue']
+for i, color in zip(range(y_prob.shape[1]), colors):
+    plt.plot(fpr[i], tpr[i], color=color, lw=2, label=f'ROC curve of class {i} (area = {roc_auc[i]:.2f})')
+plt.plot([0, 1], [0, 1], color='navy', lw=2, linestyle='--')
+plt.xlim([0.0, 1.0])
+plt.ylim([0.0, 1.05])
+plt.xlabel('False Positive Rate')
+plt.ylabel('True Positive Rate')
+plt.title('Receiver Operating Characteristic (ROC) Curve for Multiclass')
+plt.legend(loc="lower right")
+plt.show()
 # %%
