@@ -1,7 +1,7 @@
 #%%
 import numpy as np
 import pandas as pd
-import matplotlib as plt
+import matplotlib.pyplot as plt
 import seaborn as sns
 # %%
 # Load the data
@@ -40,6 +40,20 @@ plt.xticks(rotation=45, ha='right')
 plt.show()
 
 #%%
+# Count occurrences
+severity_by_weather = df.groupby(['Weather Condition', 'Driver Condition']).size().unstack(fill_value=0)
+
+pastel_colors = ['#AEC6CF', '#FFB347', '#77DD77']
+# Bar Plot
+severity_by_weather.plot(kind='bar', stacked=True, figsize=(10, 6),color=pastel_colors)
+plt.title('Injury Severity by Weather Condition')
+plt.ylabel('Count')
+plt.xlabel('Weather Condition')
+plt.legend(title='Injury Severity')
+plt.show()
+
+
+#%%
 killed_df = df[df['Driver Condition'] == 'Killed']
 
 # Now, aggregate by 'state' to count the number of 'killed' drivers
@@ -54,12 +68,19 @@ plt.figure(figsize=(14, 8))
 sns.barplot(x='Killed_count', y='State Name', data=state_killed_counts, palette='viridis')
 
 #%%
-state_killed_counts.plot(kind='pie', autopct='%1.1f%%', figsize=(10, 8), cmap='viridis', legend=False)
+# Sort the DataFrame by 'Killed_count' in descending order and select the top 10
+top_10_states = state_killed_counts.sort_values('Killed_count', ascending=False).head(10)
+
+# Plot the pie chart for the top 10 states
+top_10_states.set_index('State Name')['Killed_count'].plot(kind='pie', autopct='%1.1f%%', figsize=(10, 8), cmap='viridis', legend=False)
 
 # Add title
-plt.title('Proportion of Killed Drivers by State', fontsize=16)
+plt.title('Proportion of Killed Drivers by States (Top 10)', fontsize=16)
 plt.ylabel('')  # Remove the ylabel
 plt.show()
+
+#%%
+
 # %%
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
@@ -160,7 +181,7 @@ feature_df = feature_df.sort_values(by='Importance', ascending=False)
 
 # Plot the feature importance
 plt.figure(figsize=(10, 6))
-plt.barh(importance_df['Feature'], importance_df['Importance'])
+plt.barh(feature_df['Feature'], feature_df['Importance'])
 plt.xlabel('Importance')
 plt.title('Feature Importance in Random Forest')
 plt.gca().invert_yaxis()  # Invert y-axis to display most important features at the top
