@@ -2,7 +2,7 @@
 This is a project repository for the DATS 6103- Introduction to Data Mining Course.
 
 
-#DATASET DETAILS
+## DATASET DETAILS
 The original dataset titled Highway_railroad_accidents.csv from kaggle contained:
 1) 246000 rows
 2) 141 Columns
