@@ -151,3 +151,64 @@ plt.title('Receiver Operating Characteristic (ROC) Curve for Multiclass')
 plt.legend(loc="lower right")
 plt.show()
 # %%
+from sklearn.svm import SVC
+# MODEL 2: SVM 
+# Initialize the SVM classifier with probability estimates
+X = accs1.drop('Driver Condition', axis=1)  # Features: exclude the target column
+y = accs1['Driver Condition'] 
+X_train1, X_test1, y_train1, y_test1 = train_test_split(X, y, test_size=0.2, random_state=42)
+
+
+
+#%%
+from sklearn.tree import DecisionTreeClassifier
+
+model_tree = DecisionTreeClassifier(random_state=42)
+model_tree.fit(X_train1, y_train1)  # y_train is multi-class
+
+
+# %%
+y_pred1 = model_tree.predict(X_test1)
+
+# Evaluate the model
+accuracy = accuracy_score(y_test1, y_pred1)
+print(f"Accuracy: {accuracy:.4f}")
+
+# Detailed classification report
+print(classification_report(y_test1, y_pred1))
+# %%
+from sklearn.tree import DecisionTreeClassifier, plot_tree
+# Plot the Decision Tree
+import matplotlib.pyplot as plt
+plt.figure(figsize=(12,8))
+plot_tree(model_tree, filled=True, feature_names=accs1.feature_names, class_names=accs1.target_names)
+plt.show()
+# %%
+from sklearn.model_selection import GridSearchCV
+
+# Define a parameter grid to tune the model
+param_grid = {
+    'max_depth': [3, 5, 7, 10, None],
+    'min_samples_split': [2, 5, 10],
+    'min_samples_leaf': [1, 2, 4],
+    'max_features': ['sqrt', 'log2', None]
+}
+
+# Create a DecisionTreeClassifier instance
+dt_model = DecisionTreeClassifier(random_state=42)
+
+# Perform GridSearchCV
+grid_search = GridSearchCV(estimator=dt_model, param_grid=param_grid, cv=5, n_jobs=-1, scoring='accuracy')
+
+# Fit the model on the training data
+grid_search.fit(X_train1, y_train1)
+
+# Print best hyperparameters
+print("Best hyperparameters found: ", grid_search.best_params_)
+
+# Evaluate the best model
+best_model = grid_search.best_estimator_
+y_pred_best = best_model.predict(X_test1)
+print("Best Model Accuracy:", accuracy_score(y_test1, y_pred_best))
+
+# %%
