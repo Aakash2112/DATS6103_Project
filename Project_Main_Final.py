@@ -38,7 +38,7 @@ sns.heatmap(correlation_matrix, annot=True, fmt=".2f", cmap='coolwarm', cbar=Tru
 plt.title('Correlation Matrix')
 plt.show()
 # %%
-#SMART Q1 : DRiver's Injury
+#SMART Q1 : How can we predict the severity of a driver's injury in a railroad crossing accident using external factors?
 #%%
 #EDA
 df = pd.read_csv("accidents_final_data.csv") #Declared just for EDA
@@ -113,11 +113,8 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_
 
 #%%
 # MODEL 1: DECISION TREE
-# Initialize the SVM classifier with probability estimates
-#X = accs1.drop('Driver Condition', axis=1)  # Features: exclude the target column
-#y = accs1['Driver Condition'] 
-X_train1, X_test1, y_train1, y_test1 = train_test_split(X, y, test_size=0.2, random_state=42)
 
+X_train1, X_test1, y_train1, y_test1 = train_test_split(X, y, test_size=0.2, random_state=42)
 
 
 #%%
@@ -391,7 +388,7 @@ import matplotlib.pyplot as plt
 #%%
 
 #%%
-#SMART Q3: How can we predict the location of crossing warning sign present during railroad accidents, based on the historical data. 
+
 accs2 = accs
 
 #%%
