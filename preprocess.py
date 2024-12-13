@@ -121,7 +121,7 @@ print(clean_data)
 print(" the shape of the data now - ", clean_data.shape)
 # %%
 
-#clean_data.to_csv('accidents_final_data.csv', index=False)
+clean_data.to_csv('accidents_final_data.csv', index=False)
 
 
 # %%
