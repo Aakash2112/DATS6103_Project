@@ -30,13 +30,144 @@ print("Missing values per column:\n", missing_values)
 numerical_columns = accs.select_dtypes(include=['float64', 'int64']).columns
 categorical_columns = accs.select_dtypes(include=['object']).columns
 
-# %%
+## Visualization
+# Distribution plot for Report Year
+sns.histplot(data=accs, x='Report Year', kde=True, bins=15, color='blue')
+plt.title("Distribution of Report Year", fontsize=16)
+plt.xlabel("Report Year", fontsize=12)
+plt.ylabel("Frequency", fontsize=12)
+plt.show()
+
+#In 1980, the incident count was significantly higher, but over the years, there has been a sharp decline in the number of incidents.
+
+# Distribution plot for Incident Month
+sns.histplot(data=accs, x='Incident Month', kde=True, bins=12, color='blue')  # Adjusted for months
+plt.title("Distribution of Incidents by Month", fontsize=16)
+plt.xlabel("Month", fontsize=12)
+plt.ylabel("Frequency", fontsize=12)
+plt.xticks(ticks=range(1, 13), labels=['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'])
+plt.show()
+
+#January and December show the highest number of incidents, while April, May, and June experience a small drop of around 3,000 incidents.
+#%%
+#Number of accident reported in states
+plt.figure(figsize=(15, 8))
+sns.countplot(data=accs, x='State Name', order=accs['State Name'].value_counts().index, color='seagreen')
+plt.title('Number of Incidents per State')
+plt.xlabel('State')
+plt.ylabel('Number of Incidents')
+plt.xticks(rotation=90)
+plt.show()
+
+#Texas has the significantly highest number of incidents, followed by Illinois, Indiana. In contrast, Hawaii and District of Columbia has almost no incidents.
+#%%
+#Distribution of Temperature
+plt.figure(figsize=(10, 6))
+sns.histplot(accs['Temperature'], bins=100, kde=True, color='lightblue')
+plt.xlim(-30, 150)
+plt.title('Distribution of Temperature')
+plt.xlabel('Temperature')
+plt.ylabel('Frequency')
+plt.show()
+
+#Temperature is normally distributed.
+#%%
+#Number of Incidents by Weather Condition
+plt.figure(figsize=(12, 8))
+sns.countplot(data=accs, x='Weather Condition')
+plt.title('Number of Incidents by Weather Condition')
+plt.xlabel('Weather Condition')
+plt.ylabel('Number of Incidents')
+plt.xticks(rotation=45)
+plt.show()
+
+#Clear weather is linked to a significant number of incidents
+
+#visibility conditions correlate with incidents.
+visibility_counts = accs['Visibility'].value_counts()
+plt.figure(figsize=(10, 7))
+plt.pie(visibility_counts, labels=visibility_counts.index, autopct='%1.1f%%', colors=sns.color_palette('coolwarm'))
+plt.title('Distribution of Incidents by Visibility Condition')
+plt.show()
+
+#visibility graph shows that 50% of incidents occur during daylight hours, followed by 38% during nighttime.
+
+#Heatmap of Incidents by Weather Condition and Visibility
+visibility_weather_pivot = accs.pivot_table(index='Weather Condition', columns='Visibility', values='Incident Number', aggfunc='count')
+plt.figure(figsize=(14, 10))
+sns.heatmap(visibility_weather_pivot, cmap='YlGnBu', annot=True, fmt='d')
+plt.title('Heatmap of Incidents by Weather Condition and Visibility')
+plt.xlabel('Visibility Condition')
+plt.ylabel('Weather Condition')
+plt.show()
+
+#The heatmap also highlights a higher number of incidents occurring under clear skies and during daytime.
+#%%
+# Create a scatter plot for estimated vehicle speed and train speed
+plt.figure(figsize=(12, 8))
+sns.scatterplot(data=accs, x='Estimated Vehicle Speed', y='Train Speed', color='seagreen')
+plt.xlim(0, 110)
+plt.ylim(0, 110)
+plt.title('Correlation Between Estimated Vehicle Speed and Train Speed During Incidents')
+plt.xlabel('Estimated Vehicle Speed')
+plt.ylabel('Train Speed')
+plt.show()
+
+#The majority of accidents occurred when vehicle speeds were below 20, while train speeds ranged between 0 and 60.
+#%%
+#plot for highway user actions by different types of highway users
+plt.figure(figsize=(14, 8))
+sns.countplot(data=accs, x='Highway User Action', hue='Highway User',palette='Set2')
+plt.title('Incidents by Highway User Actions and Types of Highway Users')
+plt.xlabel('Highway User Action')
+plt.ylabel('Number of Incidents')
+plt.xticks(rotation=45)
+plt.show()
+
+#The graph shows that the majority of incidents occurred when the vehicle did not stop, with autos being the most common type involved in the collisions.
+#%%
+#Train Speeds by Track Type During Incidents
+plt.figure(figsize=(14, 8))
+sns.boxplot(data=accs, x='Track Type', y='Train Speed', color='green')
+plt.ylim(0, 120)
+plt.title('Train Speeds by Track Type During Incidents')
+plt.xlabel('Track Type')
+plt.ylabel('Train Speed')
+plt.xticks(rotation=45)
+plt.show()
+#The train speed on the main track typically ranges between 10 and 40, whereas on other rail tracks, the speed is generally below 10, with a few outliers.
+
+#Plot for the number of incidents by track type
+plt.figure(figsize=(14, 8))
+sns.countplot(data=accs, x='Track Type', color='seagreen')
+plt.title('Number of Incidents by Track Type', fontsize=16)
+plt.xlabel('Track Type', fontsize=12)
+plt.ylabel('Number of Incidents', fontsize=12)
+plt.xticks(rotation=45)
+plt.show()
+
+#A significantly higher number of incidents have been reported on the main track compared to other track types.
+
+#Plot for vehicle direction by train direction
+plt.figure(figsize=(14, 8))
+sns.countplot(data=accs, x='Vehicle Direction', hue='Train Direction', palette='Set2')
+plt.title('Incidents by Vehicle Direction and Train Direction')
+plt.xlabel('Vehicle Direction')
+plt.ylabel('Number of Incidents')
+plt.xticks(rotation=45)
+plt.show()
+
+#The graph shows that there are more incidents when the train's direction is 90 degrees compared to when it is 180 degrees
+
 # Correlation Analysis
 correlation_matrix = accs[numerical_columns].corr()
 plt.figure(figsize=(10, 8))
 sns.heatmap(correlation_matrix, annot=True, fmt=".2f", cmap='coolwarm', cbar=True)
 plt.title('Correlation Matrix')
 plt.show()
+
+
+
 # %%
 #SMART Q1 : How can we predict the severity of a driver's injury in a railroad crossing accident using external factors?
 #%%
