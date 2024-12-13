@@ -53,7 +53,7 @@ print("shape of the dataset- ", clean_data.shape)
 #%%
 import os
 print(os.getcwd())
-
+clean_data
 #%%
 # Print the shape of the cleaned dataset
 print("Shape of the dataset: ", clean_data.shape)
@@ -120,7 +120,8 @@ clean_data = clean_data.drop(columns=[col for col in columns_to_delete_cleaned i
 print(clean_data)
 print(" the shape of the data now - ", clean_data.shape)
 # %%
-clean_data.to_csv('accidents_final_data.csv', index=False)
+
+#clean_data.to_csv('accidents_final_data.csv', index=False)
 
 
 # %%
