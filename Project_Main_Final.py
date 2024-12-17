@@ -572,6 +572,11 @@ print(accident_counts.head(10))
 # Initialize label encoders
 state_encoder = LabelEncoder()
 city_encoder = LabelEncoder()
+#%%
+# Apply label encoding
+accident_counts['State_Code'] = state_encoder.fit_transform(accident_counts['State Name'])
+accident_counts['City_Code'] = city_encoder.fit_transform(accident_counts['City Name'])
+# %%
 
 #%%
 # SMART Q3: How can we predict the location of crossing warning sign present during railroad accidents, based on the historical data.
