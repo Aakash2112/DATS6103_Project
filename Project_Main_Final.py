@@ -511,6 +511,12 @@ plt.ylabel('True Labels', fontsize=12)
 #%%
 
 #%%
+import plotly.express as px
+# Create a US Map to plot number of accidents state wise
+#The format of state names and capitalize
+accs['State Name'] = accs['State Name'].str.capitalize()
+
+#%%
 # SMART Q3: How can we predict the location of crossing warning sign present during railroad accidents, based on the historical data.
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
 
