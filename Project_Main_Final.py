@@ -564,6 +564,9 @@ accident_counts = accs.groupby(['State Name', 'City Name']).size().reset_index(n
 # Sort by accident frequency
 accident_counts = accident_counts.sort_values(by='Accident_Count', ascending=False)
 #%%
+# Display top accident-prone locations
+print(accident_counts.head(10))
+#%%
 
 #%%
 # SMART Q3: How can we predict the location of crossing warning sign present during railroad accidents, based on the historical data.
