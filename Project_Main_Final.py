@@ -598,6 +598,11 @@ features = cluster_data[['State_Code', 'City_Code', 'Accident_Count']]
 # Fit K-Means clustering
 kmeans = KMeans(n_clusters=4, random_state=42)
 cluster_data['Cluster'] = kmeans.fit_predict(features)
+#%%
+# Print cluster centers
+print("Cluster Centers:\n", kmeans.cluster_centers_)
+# %%
+from sklearn.metrics import silhouette_score
 
 #%%
 # SMART Q3: How can we predict the location of crossing warning sign present during railroad accidents, based on the historical data.
