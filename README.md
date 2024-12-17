@@ -1,4 +1,4 @@
-# US Highway Railroad - Crossing Accidents Analysis & Prediction
+# US Highway Railroad - Crossing Accidents 
 
 # DATA SOURCE:
 URL: https://www.kaggle.com/datasets/yogidsba/us-highway-railgrade-crossing-accident/data
