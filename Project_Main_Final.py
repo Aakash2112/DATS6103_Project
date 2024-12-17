@@ -537,7 +537,12 @@ code = {
 #%%
 # Map the state names to their respective codes
 df_state['Code'] = df_state['State Name'].map(code)
-
+#%%
+# Check for missing values in state codes (if any)
+missing_states = df_state[df_state['Code'].isnull()]
+if not missing_states.empty:
+    print(f"Missing state codes: {missing_states}")
+    df_state = df_state.dropna(subset=['Code'])  # Drop rows with missing state codes
 #%%
 # SMART Q3: How can we predict the location of crossing warning sign present during railroad accidents, based on the historical data.
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
