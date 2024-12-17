@@ -534,6 +534,9 @@ code = {
     'South Dakota': 'SD', 'Tennessee': 'TN', 'Texas': 'TX', 'Utah': 'UT', 'Vermont': 'VT',
     'Virginia': 'VA', 'Washington': 'WA', 'West Virginia': 'WV', 'Wisconsin': 'WI', 'Wyoming': 'WY'
 }
+#%%
+# Map the state names to their respective codes
+df_state['Code'] = df_state['State Name'].map(code)
 
 #%%
 # SMART Q3: How can we predict the location of crossing warning sign present during railroad accidents, based on the historical data.
