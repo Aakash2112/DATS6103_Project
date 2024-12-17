@@ -603,7 +603,12 @@ cluster_data['Cluster'] = kmeans.fit_predict(features)
 print("Cluster Centers:\n", kmeans.cluster_centers_)
 # %%
 from sklearn.metrics import silhouette_score
+# Prepare clustering input
+cluster_features = cluster_data[['State_Code', 'City_Code', 'Accident_Count']]
 
+# Compute Silhouette Score
+silhouette = silhouette_score(cluster_features, cluster_data['Cluster'])
+print(f"Silhouette Score: {silhouette:.2f}")
 #%%
 # SMART Q3: How can we predict the location of crossing warning sign present during railroad accidents, based on the historical data.
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
