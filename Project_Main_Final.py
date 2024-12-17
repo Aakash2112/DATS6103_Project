@@ -507,6 +507,8 @@ plt.xlabel('Predicted Labels', fontsize=12)
 plt.ylabel('True Labels', fontsize=12)
 
 #%%
+# SMART Q2: How can we identify accident-prone locations in USA based on accident frequency over the past 46 years?
+#%%
 
 #%%
 # SMART Q3: How can we predict the location of crossing warning sign present during railroad accidents, based on the historical data.
