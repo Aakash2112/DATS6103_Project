@@ -515,6 +515,10 @@ import plotly.express as px
 # Create a US Map to plot number of accidents state wise
 #The format of state names and capitalize
 accs['State Name'] = accs['State Name'].str.capitalize()
+#%%
+# Aggregate data by state to get count of accidents
+df_state = accs.groupby(['State Name']).count()['Report Year'].sort_values(ascending=False).reset_index()
+df_state.rename(columns={'Report Year': 'Count_of_accident'}, inplace=True)
 
 #%%
 # SMART Q3: How can we predict the location of crossing warning sign present during railroad accidents, based on the historical data.
