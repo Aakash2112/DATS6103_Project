@@ -577,6 +577,11 @@ city_encoder = LabelEncoder()
 accident_counts['State_Code'] = state_encoder.fit_transform(accident_counts['State Name'])
 accident_counts['City_Code'] = city_encoder.fit_transform(accident_counts['City Name'])
 # %%
+from sklearn.cluster import KMeans
+# Prepare data for clustering
+cluster_data = accident_counts[['State Name', 'City Name', 'Accident_Count']].copy()
+cluster_data['State_Code'] = cluster_data['State Name'].astype('category').cat.codes
+cluster_data['City_Code'] = cluster_data['City Name'].astype('category').cat.codes
 
 #%%
 # SMART Q3: How can we predict the location of crossing warning sign present during railroad accidents, based on the historical data.
