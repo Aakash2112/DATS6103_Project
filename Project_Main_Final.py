@@ -543,6 +543,18 @@ missing_states = df_state[df_state['Code'].isnull()]
 if not missing_states.empty:
     print(f"Missing state codes: {missing_states}")
     df_state = df_state.dropna(subset=['Code'])  # Drop rows with missing state codes
+    
+#%%
+# Create the choropleth map    
+fig = px.choropleth(df_state, #Requires nbformat>=4.2.0 to run this code
+                    locations='Code',  # State abbreviations
+                    locationmode='USA-states',  # USA states mode
+                    color='Count_of_accident',  # Use accident count for coloring
+                    hover_name='State Name',  # Show state names on hover
+                    title='State-Wise Incident Report',
+                    color_continuous_scale='sunset',
+                    scope='usa')
+
 #%%
 # SMART Q3: How can we predict the location of crossing warning sign present during railroad accidents, based on the historical data.
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
