@@ -507,7 +507,108 @@ plt.xlabel('Predicted Labels', fontsize=12)
 plt.ylabel('True Labels', fontsize=12)
 
 #%%
+# SMART Q2: How can we identify accident-prone locations in USA based on accident frequency over the past 46 years?
+#%%
 
+#%%
+import plotly.express as px
+# Create a US Map to plot number of accidents state wise
+#The format of state names and capitalize
+accs['State Name'] = accs['State Name'].str.capitalize()
+#%%
+# Aggregate data by state to get count of accidents
+df_state = accs.groupby(['State Name']).count()['Report Year'].sort_values(ascending=False).reset_index()
+df_state.rename(columns={'Report Year': 'Count_of_accident'}, inplace=True)
+#%%
+# Map state names to state codes
+code = {
+    'Alabama': 'AL', 'Alaska': 'AK', 'Arizona': 'AZ', 'Arkansas': 'AR', 'California': 'CA',
+    'Colorado': 'CO', 'Connecticut': 'CT', 'Delaware': 'DE', 'District of Columbia': 'DC',
+    'Florida': 'FL', 'Georgia': 'GA', 'Hawaii': 'HI', 'Idaho': 'ID', 'Illinois': 'IL',
+    'Indiana': 'IN', 'Iowa': 'IA', 'Kansas': 'KS', 'Kentucky': 'KY', 'Louisiana': 'LA',
+    'Maine': 'ME', 'Maryland': 'MD', 'Massachusetts': 'MA', 'Michigan': 'MI', 'Minnesota': 'MN',
+    'Mississippi': 'MS', 'Missouri': 'MO', 'Montana': 'MT', 'Nebraska': 'NE', 'Nevada': 'NV',
+    'New Hampshire': 'NH', 'New Jersey': 'NJ', 'New Mexico': 'NM', 'New York': 'NY',
+    'North Carolina': 'NC', 'North Dakota': 'ND', 'Ohio': 'OH', 'Oklahoma': 'OK',
+    'Oregon': 'OR', 'Pennsylvania': 'PA', 'Rhode Island': 'RI', 'South Carolina': 'SC',
+    'South Dakota': 'SD', 'Tennessee': 'TN', 'Texas': 'TX', 'Utah': 'UT', 'Vermont': 'VT',
+    'Virginia': 'VA', 'Washington': 'WA', 'West Virginia': 'WV', 'Wisconsin': 'WI', 'Wyoming': 'WY'
+}
+#%%
+# Map the state names to their respective codes
+df_state['Code'] = df_state['State Name'].map(code)
+#%%
+# Check for missing values in state codes (if any)
+missing_states = df_state[df_state['Code'].isnull()]
+if not missing_states.empty:
+    print(f"Missing state codes: {missing_states}")
+    df_state = df_state.dropna(subset=['Code'])  # Drop rows with missing state codes
+    
+#%%
+# Create the choropleth map    
+fig = px.choropleth(df_state, #Requires nbformat>=4.2.0 to run this code
+                    locations='Code',  # State abbreviations
+                    locationmode='USA-states',  # USA states mode
+                    color='Count_of_accident',  # Use accident count for coloring
+                    hover_name='State Name',  # Show state names on hover
+                    title='State-Wise Incident Report',
+                    color_continuous_scale='sunset',
+                    scope='usa')
+#%%
+# Show the map
+fig.show()
+#%%
+#%%
+accident_counts = accs.groupby(['State Name', 'City Name']).size().reset_index(name='Accident_Count')
+# %%
+# Sort by accident frequency
+accident_counts = accident_counts.sort_values(by='Accident_Count', ascending=False)
+#%%
+# Display top accident-prone locations
+print(accident_counts.head(10))
+#%%
+
+#%%
+# Initialize label encoders
+state_encoder = LabelEncoder()
+city_encoder = LabelEncoder()
+#%%
+# Apply label encoding
+accident_counts['State_Code'] = state_encoder.fit_transform(accident_counts['State Name'])
+accident_counts['City_Code'] = city_encoder.fit_transform(accident_counts['City Name'])
+# %%
+from sklearn.cluster import KMeans
+# Prepare data for clustering
+cluster_data = accident_counts[['State Name', 'City Name', 'Accident_Count']].copy()
+cluster_data['State_Code'] = cluster_data['State Name'].astype('category').cat.codes
+cluster_data['City_Code'] = cluster_data['City Name'].astype('category').cat.codes
+#%%
+# Apply KMeans clustering
+kmeans = KMeans(n_clusters=3, random_state=42)
+cluster_data['Cluster'] = kmeans.fit_predict(cluster_data[['State_Code', 'City_Code', 'Accident_Count']])
+
+# View clustered data
+print(cluster_data.sort_values(by='Cluster'))
+
+#%%
+#%%
+# Prepare features for clustering
+features = cluster_data[['State_Code', 'City_Code', 'Accident_Count']]
+
+# Fit K-Means clustering
+kmeans = KMeans(n_clusters=4, random_state=42)
+cluster_data['Cluster'] = kmeans.fit_predict(features)
+#%%
+# Print cluster centers
+print("Cluster Centers:\n", kmeans.cluster_centers_)
+# %%
+from sklearn.metrics import silhouette_score
+# Prepare clustering input
+cluster_features = cluster_data[['State_Code', 'City_Code', 'Accident_Count']]
+
+# Compute Silhouette Score
+silhouette = silhouette_score(cluster_features, cluster_data['Cluster'])
+print(f"Silhouette Score: {silhouette:.2f}")
 #%%
 # SMART Q3: How can we predict the location of crossing warning sign present during railroad accidents, based on the historical data.
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
