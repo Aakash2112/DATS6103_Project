@@ -582,6 +582,13 @@ from sklearn.cluster import KMeans
 cluster_data = accident_counts[['State Name', 'City Name', 'Accident_Count']].copy()
 cluster_data['State_Code'] = cluster_data['State Name'].astype('category').cat.codes
 cluster_data['City_Code'] = cluster_data['City Name'].astype('category').cat.codes
+#%%
+# Apply KMeans clustering
+kmeans = KMeans(n_clusters=3, random_state=42)
+cluster_data['Cluster'] = kmeans.fit_predict(cluster_data[['State_Code', 'City_Code', 'Accident_Count']])
+
+# View clustered data
+print(cluster_data.sort_values(by='Cluster'))
 
 #%%
 # SMART Q3: How can we predict the location of crossing warning sign present during railroad accidents, based on the historical data.
