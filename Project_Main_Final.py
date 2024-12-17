@@ -554,6 +554,9 @@ fig = px.choropleth(df_state, #Requires nbformat>=4.2.0 to run this code
                     title='State-Wise Incident Report',
                     color_continuous_scale='sunset',
                     scope='usa')
+#%%
+# Show the map
+fig.show()
 
 #%%
 # SMART Q3: How can we predict the location of crossing warning sign present during railroad accidents, based on the historical data.
