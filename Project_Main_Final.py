@@ -557,6 +557,13 @@ fig = px.choropleth(df_state, #Requires nbformat>=4.2.0 to run this code
 #%%
 # Show the map
 fig.show()
+#%%
+#%%
+accident_counts = accs.groupby(['State Name', 'City Name']).size().reset_index(name='Accident_Count')
+# %%
+# Sort by accident frequency
+accident_counts = accident_counts.sort_values(by='Accident_Count', ascending=False)
+#%%
 
 #%%
 # SMART Q3: How can we predict the location of crossing warning sign present during railroad accidents, based on the historical data.
